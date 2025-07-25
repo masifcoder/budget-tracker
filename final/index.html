@@ -57,7 +57,7 @@
                     <option selected>All</option>
                     <option value="food">Food</option>
                     <option value="transport">Transport</option>
-                    <option value="entertainment">Entertainment</option>
+                    <option value="groceries">Groceries</option>
                     <option value="bills">Bills</option>
                 </select>
             </div>
@@ -162,11 +162,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+
         let updateIncomeBtn = document.getElementById("updateIncomeBtn");
         let incomeInput = document.getElementById("incomeInput");
         let incomeValue = document.querySelector("#incomeValue span");
         let remainingValue = document.querySelector("#remainingValue span");
         let spentValue = document.querySelector("#spentValue span");
+        let filterBtn = document.getElementById("filterBtn");
 
         // variables
         let totalIncome = 0;
@@ -177,6 +179,7 @@
 
         // update total values
         function updateTotals(income = null, totalExpenses = null) {
+            // debugger;
             if (income !== null) {
                 incomeValue.innerText = income;
                 totalIncome = income;
@@ -199,6 +202,7 @@
 
         // update income function
         updateIncomeBtn.addEventListener("click", function () {
+            //  debugger;
             let incomeInputValue = incomeInput.value;
 
             updateTotals(incomeInputValue, null);
@@ -212,6 +216,7 @@
 
         // add expense function
         function addExpense() {
+            //  debugger;
             let expense = document.getElementById("expenseAmount").value;
             let date = document.getElementById("expenseDate").value;
             let category = document.getElementById("expenseCategory").value;
@@ -241,12 +246,18 @@
 
 
         // update expense row
-        function updateExpensesData() {
-
+        function updateExpensesData(expensesData = null) {
+            //S  debugger;
             let rowsHtml = "";
             let totalExpAmount = 0;
 
-            expenses.forEach(function (exp, index) {
+            let expenseAr = expenses;
+
+            if (expensesData != null) {
+                expenseAr = expensesData;
+            }
+
+            expenseAr.forEach(function (exp, index) {
                 rowsHtml += `
                  <tr>
                         <td>${exp.date}</td>
@@ -266,10 +277,60 @@
             // udpate totals
             updateTotals(null, totalExpAmount);
 
-            console.log(expenses, totalExpAmount);
+         //   console.log(expenses, totalExpAmount);
         }
 
 
+
+        // filter expenses
+        filterBtn.addEventListener("click", function () {
+            let filterCat = document.getElementById("filterCategory").value;
+            let startDateValue = document.getElementById("startDate").value;
+            let endDateValue = document.getElementById("endDate").value;
+
+            let startDateMS = null;
+            let endDateMS = null;
+
+            if (startDateValue != "" && endDateValue != "") {
+                startDateMS = new Date(startDateValue).getTime();
+                endDateMS = new Date(endDateValue).getTime();
+            }
+
+
+
+            let filteredData = expenses.filter(function (element, index) {
+
+                if (filterCat != 'All') {
+                    if (element.category == filterCat) {
+                        return element;
+                    }
+                } else {
+                    return element;
+                }
+
+            });
+
+
+            // filter by start date and end date
+            if (startDateMS != null && endDateMS != null) {
+                console.log("inside seconds")
+
+                let filteredByDates = filteredData.filter(function (element, index) {
+
+                    let expenseDateMS = new Date(element.date).getTime();
+
+                    if (expenseDateMS >= startDateMS && expenseDateMS <= endDateMS) {
+                        return element;
+                    } 
+                });
+
+                updateExpensesData(filteredByDates);
+                return;
+            }
+
+            updateExpensesData(filteredData);
+
+        });
 
     </script>
 </body>
