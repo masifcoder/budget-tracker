@@ -163,6 +163,9 @@
 
     <script>
 
+
+
+
         let updateIncomeBtn = document.getElementById("updateIncomeBtn");
         let incomeInput = document.getElementById("incomeInput");
         let incomeValue = document.querySelector("#incomeValue span");
@@ -175,6 +178,26 @@
         let totalRemaining = 0;
         let totalExpenses = 0;
         let expenses = [];
+
+
+        // update element on window load
+        window.onload = function () {
+            let localIncome = localStorage.getItem("income");
+            if (localIncome !== null) {
+                totalIncome = +localIncome;
+            }
+            updateTotals(totalIncome);
+
+            // local storage expenses
+            let localExpenses = localStorage.getItem("expenses");
+            
+            if(localExpenses !== null) {
+                let expObj = JSON.parse(localExpenses);
+                expenses = expObj;
+                updateExpensesData();
+            }
+        }
+
 
 
         // update total values
@@ -205,6 +228,10 @@
             //  debugger;
             let incomeInputValue = incomeInput.value;
 
+            // save in localstorage
+            localStorage.setItem("income", incomeInputValue);
+
+
             updateTotals(incomeInputValue, null);
 
             // close modal
@@ -233,6 +260,10 @@
 
             // push into expenses array
             expenses.push(expenseObj);
+
+
+            localStorage.setItem("expenses", JSON.stringify(expenses) );
+
 
 
             // run update expenses function
@@ -277,7 +308,7 @@
             // udpate totals
             updateTotals(null, totalExpAmount);
 
-         //   console.log(expenses, totalExpAmount);
+            //   console.log(expenses, totalExpAmount);
         }
 
 
@@ -321,7 +352,7 @@
 
                     if (expenseDateMS >= startDateMS && expenseDateMS <= endDateMS) {
                         return element;
-                    } 
+                    }
                 });
 
                 updateExpensesData(filteredByDates);
